@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
@@ -16,6 +20,7 @@ import java.io.Serializable;
 public class Vehicle implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id") Long id;
-    @Column(name="vehicle_sn") String sn;
+    @Column(name="vehicle_id") Long vehicleId;
+    @Column(name="vehicle_sn") String vehicleSn;
+
 }

@@ -1,5 +1,6 @@
 package com.telemetry.restservice.controller;
 
+import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.Vehicle;
 import com.telemetry.restservice.service.TelemetryService;
 import org.h2.util.json.JSONArray;
@@ -19,7 +20,7 @@ public class TelemetryController {
     }
 
     @GetMapping("query")
-    public List<Vehicle> query(){
-        return telemetryService.fetchVehicles();
+    public List<TelemetryItem> query(){
+        return telemetryService.fetchTelemetry();
     }
 }
