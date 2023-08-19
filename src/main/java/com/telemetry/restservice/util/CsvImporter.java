@@ -28,6 +28,7 @@ import java.util.List;
 @Component
 public class CsvImporter {
 
+    public static final String PROCESSED_SUBFOLDER = "PROCESSED";
     @Autowired
     private TelemetryItemDao telemetryItemDao;
 
@@ -42,7 +43,7 @@ public class CsvImporter {
 
         for (String file: allFiles) {
             importSingleFile(parser, file);
-            moveFileToSubfolder(file, "PROCESSED");
+            moveFileToSubfolder(file);
         }
 
     }
@@ -97,7 +98,10 @@ public class CsvImporter {
         // Check if the path corresponds to a directory
         if (folder.isDirectory()) {
             // Create a FilenameFilter to filter CSV files
-            FilenameFilter csvFileFilter = (dir, name) -> name.toLowerCase().endsWith(".csv");
+            FilenameFilter csvFileFilter = (dir, name) ->
+                    (name.toLowerCase().startsWith("ld_a")
+                    || name.toLowerCase().startsWith("ld_c")) &&
+                            name.toLowerCase().endsWith(".csv");
 
             // Get a list of CSV files in the folder using the filter
             File[] csvFiles = folder.listFiles(csvFileFilter);
@@ -113,7 +117,7 @@ public class CsvImporter {
         return csvFilePaths;
     }
 
-    private void moveFileToSubfolder(String filePath, String subfolderName) {
+    private void moveFileToSubfolder(String filePath) {
         File sourceFile = new File(filePath);
 
         // Check if the source file exists
@@ -123,11 +127,11 @@ public class CsvImporter {
         }
 
         // Create the subfolder within the same directory as the source file
-        File subfolder = new File(sourceFile.getParent(), subfolderName);
+        File subfolder = new File(sourceFile.getParent(), PROCESSED_SUBFOLDER);
         if (!subfolder.exists()) {
             boolean created = subfolder.mkdir();
             if (!created) {
-                log.error("Failed to create subfolder: {}", subfolderName);
+                log.error("Failed to create subfolder: {}", PROCESSED_SUBFOLDER);
                 return;
             }
         }
