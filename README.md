@@ -1,6 +1,22 @@
 # rest-service
 This is simple app that is processing CSV files and importing rows into in memory H@ database.
 
+## Starting from IDE
+### Prerequisites
+1. IDE of your choice
+2. Maven 3+
+3. JDK 11
+
+### How to start
+1. Import project into your IDE
+2. Create maven run configuration with goal clean install
+![img_1.png](img_1.png)
+3. Start your maven run configuration you have just created. Build should pass.
+4. Find RestServiceApplication.java in your project tree. Right click. Run.
+![img_2.png](img_2.png)
+
+
+
 ## DB
 In memory H2 DB is used. schema.sql is read on startup and database is set up.
 
