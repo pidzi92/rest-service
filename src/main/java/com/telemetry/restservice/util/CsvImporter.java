@@ -10,7 +10,9 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -19,6 +21,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -28,11 +31,14 @@ public class CsvImporter {
     @Autowired
     private TelemetryItemDao telemetryItemDao;
 
+    @Value("${telemetry.source.csv.root}")
+    private String csvSourceFolder;
+
     public void csvToDb(){
         CSVParser parser = new CSVParserBuilder().withIgnoreQuotations(true).withSeparator(';').build();
 
 
-        List<String> allFiles = queryCsvFiles("C:\\CSV");
+        List<String> allFiles = queryCsvFiles(csvSourceFolder);
 
         for (String file: allFiles) {
             importSingleFile(parser, file);
@@ -46,8 +52,12 @@ public class CsvImporter {
             String[] singleRow = reader.readNext();
             String[] headers = singleRow;
             if (headers == null){
-                log.error("File does not have headers. Skipping.");
+                log.error("File does not have headers. Skipping: {}", fullFilePath);
                 return;
+            }else{
+                headers = Arrays.stream(headers)
+                        .map(this::csvToDbHeader)
+                        .toArray(String[]::new);
             }
             List<TelemetryItem> telemetryItems = new ArrayList<>();
 
@@ -56,7 +66,12 @@ public class CsvImporter {
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
                 for (int i=0; i< headers.length; i++){
                     //TODO parse column names and check types
-                    TelemetryProperty prop = TelemetryProperty.builder().telPropName(headers[i]).telPropValue(singleRow[i]).telPropType(TelemetryPropertyTypeEnum.STRING).telItem(telItem).build();
+                    TelemetryProperty prop = TelemetryProperty.builder()
+                            .telPropName(headers[i])
+                            .telPropValue(singleRow[i])
+                            .telPropType(TelemetryPropertyTypeEnum.STRING)
+                            .telItem(telItem)
+                            .build();
                     propsForSingleItem.add(prop);
 
                 }
@@ -103,7 +118,7 @@ public class CsvImporter {
 
         // Check if the source file exists
         if (!sourceFile.exists()) {
-            System.out.println("Source file does not exist.");
+            log.error("Source file does not exist: {}", sourceFile);
             return;
         }
 
@@ -112,7 +127,7 @@ public class CsvImporter {
         if (!subfolder.exists()) {
             boolean created = subfolder.mkdir();
             if (!created) {
-                System.out.println("Failed to create subfolder.");
+                log.error("Failed to create subfolder: {}", subfolderName);
                 return;
             }
         }
@@ -123,9 +138,27 @@ public class CsvImporter {
         // Move the source file to the destination path
         boolean moved = sourceFile.renameTo(destinationFile);
         if (moved) {
-            System.out.println("File moved successfully.");
+            log.info("File moved successfully: {}", filePath);
         } else {
-            System.out.println("Failed to move the file.");
+            log.error("Failed to move the file: {}", filePath);
         }
+    }
+
+    private static String removeTextInBrackets(String input) {
+        return input.replaceAll("\\[[^\\]]*\\]", "");
+    }
+
+    private static String removeNonAlphanumeric(String input) {
+        return input.replaceAll("[^a-zA-Z0-9]", " ");
+    }
+
+    private static String toPascalCase(String input) {
+        return WordUtils.capitalizeFully(input).replaceAll(" ", "");
+    }
+
+    public String csvToDbHeader(String input) {
+        String withoutBrackets = removeTextInBrackets(input);
+        String withoutSpecialChars = removeNonAlphanumeric(withoutBrackets);
+        return toPascalCase(withoutSpecialChars);
     }
 }
