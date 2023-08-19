@@ -29,6 +29,5 @@ public class TelemetryItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="tel_id") @JsonIgnore Long telId;
-    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "vehicle_id") private Vehicle vehicle;
     @OneToMany(mappedBy = "telItem", cascade = CascadeType.ALL, orphanRemoval = true) private List<TelemetryProperty> telProps;
 }

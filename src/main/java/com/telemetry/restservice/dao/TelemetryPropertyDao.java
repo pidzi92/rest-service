@@ -1,7 +1,6 @@
 package com.telemetry.restservice.dao;
 
 import com.telemetry.restservice.entity.TelemetryProperty;
-import com.telemetry.restservice.entity.Vehicle;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
