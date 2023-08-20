@@ -2,8 +2,7 @@ package com.telemetry.restservice.controller;
 
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.model.Filter;
-import com.telemetry.restservice.model.FilterOperationEnum;
-import com.telemetry.restservice.service.TelemetryService;
+import com.telemetry.restservice.impl.TelemetryItemServiceImpl;
 import com.telemetry.restservice.util.CsvImporter;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -19,22 +18,14 @@ import java.util.List;
 @Slf4j
 @RestController
 public class TelemetryController {
-    private TelemetryService telemetryService;
+
     private CsvImporter csvImporter;
+    private final TelemetryItemServiceImpl telemetryItemServiceImpl;
 
     @Autowired
-    public TelemetryController(TelemetryService telemetryService, CsvImporter csvImporter){
-        this.telemetryService=telemetryService;
+    public TelemetryController(CsvImporter csvImporter, TelemetryItemServiceImpl telemetryItemServiceImpl){
         this.csvImporter = csvImporter;
-    }
-
-    /**
-     *
-     * @return List of all t@{@link TelemetryItem} from DB
-     */
-    @GetMapping("query")
-    public List<TelemetryItem> query(){
-        return telemetryService.fetchTelemetry();
+        this.telemetryItemServiceImpl = telemetryItemServiceImpl;
     }
 
     /**
@@ -48,13 +39,12 @@ public class TelemetryController {
     }
 
     /**
-     *
      * @param filters - List of @{@link Filter} to apply on the telemetry items form DB
+     *
      * @return filtered list of @{@link TelemetryItem} from DB
      */
     @PostMapping("filter")
-    public String filter(@RequestBody List<Filter> filters){
-        log.info(filters.toString());
-        return "Nothing yet";
+    public List<TelemetryItem> filter(@RequestBody List<Filter> filters){
+        return telemetryItemServiceImpl.filterTelemetryItems(filters);
     }
 }
