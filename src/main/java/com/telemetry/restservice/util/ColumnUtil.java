@@ -2,7 +2,6 @@ package com.telemetry.restservice.util;
 
 import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import org.springframework.stereotype.Component;
-
 import java.text.SimpleDateFormat;
 
 @Component

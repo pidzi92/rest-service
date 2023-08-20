@@ -1,6 +1,5 @@
 package com.telemetry.restservice.impl;
 
-import com.telemetry.restservice.dao.TelemetryItemRepository;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
@@ -9,22 +8,17 @@ import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class TelemetryItemServiceImpl implements TelemetryItemService {
-
-    private final TelemetryItemRepository telemetryItemRepository;
     private final EntityManager entityManager;
 
     private final FilterUtil filterUtil;
@@ -33,16 +27,14 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
 
     @Autowired
     public TelemetryItemServiceImpl(
-            TelemetryItemRepository telemetryItemRepository,
             EntityManager entityManager, FilterUtil filterUtil,  ColumnUtil columnUtil) {
-        this.telemetryItemRepository = telemetryItemRepository;
         this.entityManager = entityManager;
         this.filterUtil = filterUtil;
         this.columnUtil = columnUtil;
     }
 
     public List<TelemetryItem> filterTelemetryItems(List<Filter> filters) {
-        List<Filter> validFilters =filterUtil.validateFilter(filters);
+        List<Filter> validFilters =filterUtil.validateFilters(filters);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TelemetryItem> query = criteriaBuilder.createQuery(TelemetryItem.class);

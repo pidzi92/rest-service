@@ -1,9 +1,6 @@
 package com.telemetry.restservice.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)

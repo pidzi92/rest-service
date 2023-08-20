@@ -29,13 +29,11 @@ public class TelemetryController {
     }
 
     /**
-     *
-     * @return status message of the
+     * Endpoint used for importing csv telemetry data into DB
      */
     @GetMapping("importCsv")
-    public String importCsv(){
+    public void importCsv(){
             csvImporter.csvToDb();
-            return "OK";
     }
 
     /**
