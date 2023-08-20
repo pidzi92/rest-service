@@ -65,7 +65,7 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
     private static Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
         switch (filter.getOperation()) {
             case Equals:
-                return criteriaBuilder.equal(telemetryPropertyJoin.get("telPropValue"), filter.getValue());
+                return criteriaBuilder.equal(telemetryPropertyJoin.get("telPropValue"), filter.getValue().toString());
             case LessThan:
                 return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
             case GreaterThan:
@@ -76,5 +76,4 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
                 throw new IllegalArgumentException("Unsupported operation: " + filter.getOperation());
         }
     }
-
 }
