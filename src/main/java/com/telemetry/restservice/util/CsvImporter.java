@@ -66,7 +66,6 @@ public class CsvImporter {
                 TelemetryItem telItem = TelemetryItem.builder().build();
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
                 for (int i=0; i< headers.length; i++){
-                    //TODO parse column names and check types
                     TelemetryProperty prop = TelemetryProperty.builder()
                             .telPropName(headers[i])
                             .telPropValue(singleRow[i])
