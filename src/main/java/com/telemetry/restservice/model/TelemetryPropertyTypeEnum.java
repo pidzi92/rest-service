@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public enum TelemetryPropertyTypeEnum {
     INTEGER,
-    FLOAT,
+    DOUBLE,
     BOOLEAN,
     STRING,
     DATETIME

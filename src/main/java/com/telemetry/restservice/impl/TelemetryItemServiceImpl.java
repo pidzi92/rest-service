@@ -5,6 +5,7 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.service.TelemetryItemService;
+import com.telemetry.restservice.util.FilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +24,27 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
     private final TelemetryItemRepository telemetryItemRepository;
     private final EntityManager entityManager;
 
+
+    private final FilterUtil filterUtil;
+
     @Autowired
     public TelemetryItemServiceImpl(
             TelemetryItemRepository telemetryItemRepository,
-            EntityManager entityManager) {
+            EntityManager entityManager, FilterUtil filterUtil) {
         this.telemetryItemRepository = telemetryItemRepository;
         this.entityManager = entityManager;
+        this.filterUtil = filterUtil;
     }
 
     public List<TelemetryItem> filterTelemetryItems(List<Filter> filters) {
+        List<Filter> validFilters =filterUtil.validateFilter(filters);
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TelemetryItem> query = criteriaBuilder.createQuery(TelemetryItem.class);
         Root<TelemetryItem> telemetryItemRoot = query.from(TelemetryItem.class);
 
         List<Predicate> predicates = new ArrayList<>();
-        for (Filter filter : filters) {
+        for (Filter filter : validFilters) {
             Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin =
                     telemetryItemRoot.join("telProps");
 

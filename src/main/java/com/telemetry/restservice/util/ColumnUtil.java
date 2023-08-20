@@ -1,0 +1,75 @@
+package com.telemetry.restservice.util;
+
+import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ColumnUtil {
+    public TelemetryPropertyTypeEnum getColumnType(String dbHeader){
+
+        switch(dbHeader){
+            case "DateTime":
+                return TelemetryPropertyTypeEnum.DATETIME;
+            case "AllWheelDriveStatus":
+            case "ActualStatusOfCreeper":
+            case "Chopper":
+            case "FrontAttachmentOnOff":
+            case "WorkingPosition":
+            case "GrainTankUnloading":
+            case "MainDriveStatus":
+            case "GrainTank70":
+            case "GrainTank100":
+            case "YieldMeasurement":
+            case "ReturnsAugerMeasurement":
+            case "MoistureMeasurement":
+            case "AutoPilotStatus":
+                return TelemetryPropertyTypeEnum.BOOLEAN;
+            case "EngineSpeed":
+            case "EngineLoad":
+            case "CoolantTemperature":
+            case "SpeedFrontPto":
+            case "SpeedRearPto":
+            case "CurrentGearShift":
+            case "ParkingBrakeStatus":
+            case "TransverseDifferentialLockStatus":
+            case "DrumSpeed":
+            case "FanSpeed":
+            case "RotorStrawWalkerSpeed":
+            case "NoOfPartialWidths":
+            case "MaxNoOfPartialWidths":
+            case "FeedRakeSpeed":
+            case "ConcavePosition":
+            case "UpperSievePosition":
+            case "LowerSievePosition":
+            case "RadialSpreaderSpeed":
+            case "GrainInReturns":
+            case "SpecificCropWeight":
+            case "CruisePilotStatus":
+            case "SeparationSensitivity":
+            case "SieveSensitivity":
+                return TelemetryPropertyTypeEnum.INTEGER;
+            case "GpsLongitude":
+            case "GpsLatitude":
+            case "TotalWorkingHoursCounter":
+            case "FuelConsumption":
+            case "GroundSpeedGearbox":
+            case "GroundSpeedRadar":
+            case "AmbientTemperature":
+            case "GroundSpeed":
+            case "SeparationLosses":
+            case "SieveLosses":
+            case "DieselTankLevel":
+            case "GrainMoistureContent":
+            case "Throughput":
+            case "ChannelPosition":
+            case "RateOfWork":
+            case "Yield":
+            case "QuantimeterCalibrationFactor":
+                return TelemetryPropertyTypeEnum.DOUBLE;
+            case "SerialNumber":
+            case "TypeOfCrop":
+            default:
+                return TelemetryPropertyTypeEnum.STRING;
+        }
+    }
+}
