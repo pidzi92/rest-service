@@ -5,6 +5,7 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.service.TelemetryItemService;
+import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,16 +27,18 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
     private final TelemetryItemRepository telemetryItemRepository;
     private final EntityManager entityManager;
 
-
     private final FilterUtil filterUtil;
+
+    private final ColumnUtil columnUtil;
 
     @Autowired
     public TelemetryItemServiceImpl(
             TelemetryItemRepository telemetryItemRepository,
-            EntityManager entityManager, FilterUtil filterUtil) {
+            EntityManager entityManager, FilterUtil filterUtil,  ColumnUtil columnUtil) {
         this.telemetryItemRepository = telemetryItemRepository;
         this.entityManager = entityManager;
         this.filterUtil = filterUtil;
+        this.columnUtil = columnUtil;
     }
 
     public List<TelemetryItem> filterTelemetryItems(List<Filter> filters) {
@@ -62,14 +67,26 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
 
         return entityManager.createQuery(query).getResultList();
     }
-    private static Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
+    private Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
         switch (filter.getOperation()) {
             case Equals:
                 return criteriaBuilder.equal(telemetryPropertyJoin.get("telPropValue"), filter.getValue().toString());
             case LessThan:
-                return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                switch (columnUtil.getColumnType(filter.getField())){
+                    case DOUBLE:
+                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                    case INTEGER:
+                    case DATETIME:
+                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Long) filter.getValue());
+                }
             case GreaterThan:
-                return criteriaBuilder.greaterThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                switch (columnUtil.getColumnType(filter.getField())) {
+                    case DOUBLE:
+                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                    case INTEGER:
+                    case DATETIME:
+                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get("telPropValue"), (Long) filter.getValue());
+                }
             case Contains:
                 return criteriaBuilder.like(telemetryPropertyJoin.get("telPropValue"), "%" + filter.getValue() + "%");
             default:

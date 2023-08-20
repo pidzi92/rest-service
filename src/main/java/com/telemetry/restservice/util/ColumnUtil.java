@@ -3,8 +3,11 @@ package com.telemetry.restservice.util;
 import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+
 @Component
 public class ColumnUtil {
+    public SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a");
     public TelemetryPropertyTypeEnum getColumnType(String dbHeader){
 
         switch(dbHeader){

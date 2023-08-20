@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,9 +68,20 @@ public class CsvImporter {
                 TelemetryItem telItem = TelemetryItem.builder().build();
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
                 for (int i=0; i< headers.length; i++){
+
+                    String value = singleRow[i];
+                    if (columnUtil.getColumnType(headers[i]) == TelemetryPropertyTypeEnum.DATETIME){
+                        try {
+                            value = String.valueOf(columnUtil.dateFormat.parse(value).toInstant().toEpochMilli());
+                        } catch (ParseException e) {
+                            log.error("Wrong data format. Csv column skipped: {}", Arrays.toString(singleRow));
+                            break;
+                        }
+                    }
+
                     TelemetryProperty prop = TelemetryProperty.builder()
                             .telPropName(headers[i])
-                            .telPropValue(singleRow[i])
+                            .telPropValue(value)
                             .telPropType(columnUtil.getColumnType(headers[i]))
                             .telItem(telItem)
                             .build();

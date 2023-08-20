@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,9 +54,11 @@ public class FilterUtil {
                     }
                     break;
                 case DATETIME:
-                    if (value instanceof Date){
+                    try {
+                        Date dateValue = columnUtil.dateFormat.parse(value.toString());
+                        filter.setValue(dateValue.toInstant().toEpochMilli());
                         validFilters.add(filter);
-                    }else{
+                    }catch (ParseException e){
                         log.error("Invalid filter, omitted: {}", filter);
                         continue;
                     }
