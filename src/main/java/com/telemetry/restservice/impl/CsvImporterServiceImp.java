@@ -1,4 +1,4 @@
-package com.telemetry.restservice.util;
+package com.telemetry.restservice.impl;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -8,11 +8,14 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.telemetry.restservice.dao.TelemetryItemDao;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
+import com.telemetry.restservice.service.CsvImporterService;
+import com.telemetry.restservice.util.ColumnUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -24,16 +27,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Utility class for importing CSV files into the database.
+ * Implementation of the CsvImporterService interface providing methods for importing CSV telemetry items from CSV into DB.
  */
 @Slf4j
-@Component
-public class CsvImporter {
+@Service
+public class CsvImporterServiceImp implements CsvImporterService {
 
     private static final String PROCESSED_SUBFOLDER = "PROCESSED";
     @Autowired
     private TelemetryItemDao telemetryItemDao;
-    @Autowired ColumnUtil columnUtil;
+    @Autowired
+    ColumnUtil columnUtil;
 
     @Value("${telemetry.source.csv.root}")
     private String csvSourceFolder;
@@ -41,7 +45,6 @@ public class CsvImporter {
     /**
      * Imports CSV files from specified folder on csvSourceFolder into DB
      */
-
     public void csvToDb(){
         CSVParser parser = new CSVParserBuilder().withIgnoreQuotations(true).withSeparator(';').build();
 
@@ -169,7 +172,7 @@ public class CsvImporter {
             // Create a FilenameFilter to filter CSV files starting with ld_a or ld_c
             FilenameFilter csvFileFilter = (dir, name) ->
                     (name.toLowerCase().startsWith("ld_a")
-                    || name.toLowerCase().startsWith("ld_c")) &&
+                            || name.toLowerCase().startsWith("ld_c")) &&
                             name.toLowerCase().endsWith(".csv");
 
             // Get a list of CSV files in the folder using the filter
@@ -228,4 +231,5 @@ public class CsvImporter {
     private static String toPascalCase(String input) {
         return WordUtils.capitalizeFully(input).replaceAll(" ", "");
     }
+
 }

@@ -4,7 +4,7 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.impl.TelemetryItemServiceImpl;
 import com.telemetry.restservice.model.TelemetryItemDTO;
-import com.telemetry.restservice.util.CsvImporter;
+import com.telemetry.restservice.service.CsvImporterService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +23,18 @@ import java.util.List;
 @RestController
 public class TelemetryController {
 
-    private CsvImporter csvImporter;
+    private CsvImporterService csvImporterService;
     private final TelemetryItemServiceImpl telemetryItemServiceImpl;
 
     /**
      * Constructor for TelemetryController.
      *
-     * @param csvImporter              The CSV importer instance for importing telemetry data.
+     * @param csvImporterService              The CSV importer service instance for importing telemetry data.
      * @param telemetryItemServiceImpl The service implementation for telemetry items.
      */
     @Autowired
-    public TelemetryController(CsvImporter csvImporter, TelemetryItemServiceImpl telemetryItemServiceImpl){
-        this.csvImporter = csvImporter;
+    public TelemetryController(CsvImporterService csvImporterService, TelemetryItemServiceImpl telemetryItemServiceImpl){
+        this.csvImporterService = csvImporterService;
         this.telemetryItemServiceImpl = telemetryItemServiceImpl;
     }
 
@@ -43,7 +43,7 @@ public class TelemetryController {
      */
     @GetMapping("importCsv")
     public void importCsv(){
-            csvImporter.csvToDb();
+            csvImporterService.csvToDb();
     }
 
     /**

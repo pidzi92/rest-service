@@ -7,6 +7,7 @@ import com.telemetry.restservice.model.TelemetryItemDTO;
 import com.telemetry.restservice.service.TelemetryItemService;
 import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
@@ -24,6 +25,7 @@ import java.util.Map;
 /**
  * Implementation of the TelemetryItemService interface providing methods for filtering telemetry items.
  */
+@Slf4j
 @Service
 public class TelemetryItemServiceImpl implements TelemetryItemService {
     private final EntityManager entityManager;
