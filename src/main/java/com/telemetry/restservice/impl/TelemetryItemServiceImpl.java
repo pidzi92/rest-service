@@ -3,6 +3,7 @@ package com.telemetry.restservice.impl;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
+import com.telemetry.restservice.model.TelemetryItemDTO;
 import com.telemetry.restservice.service.TelemetryItemService;
 import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
@@ -42,7 +43,7 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
      * @param filters List of Filter objects representing filters to apply on telemetry items.
      * @return A list of TelemetryItem objects matching the applied filters.
      */
-    public List<TelemetryItem> filterTelemetryItems(List<Filter> filters) {
+    public List<TelemetryItemDTO> filterTelemetryItems(List<Filter> filters) {
         List<Filter> validFilters =filterUtil.validateFilters(filters);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -66,7 +67,23 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
         Predicate combinedPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         query.where(combinedPredicate);
 
-        return entityManager.createQuery(query).getResultList();
+        List<TelemetryItem> telemetryItemList = entityManager.createQuery(query).getResultList();
+
+        List<TelemetryItemDTO> dtoList = new ArrayList<>();
+        for (TelemetryItem telemetryItem : telemetryItemList) {
+            TelemetryItemDTO dto = convertToDTO(telemetryItem);
+            dtoList.add(dto);
+        }
+
+
+        return dtoList;
+    }
+
+
+    public TelemetryItemDTO convertToDTO(TelemetryItem telemetryItem) {
+        TelemetryItemDTO dto = new TelemetryItemDTO();
+        dto.setTelProps(telemetryItem.getTelProps());
+        return dto;
     }
     private Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
         switch (filter.getOperation()) {

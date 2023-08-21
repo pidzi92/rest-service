@@ -36,7 +36,7 @@ public class TelemetryProperty implements Serializable {
 
     @Column(name="tel_prop_name") String telPropName;
     @Column(name="tel_prop_value") String telPropValue;
-    @Column(name="tel_prop_type") TelemetryPropertyTypeEnum telPropType;
+    @Column(name="tel_prop_type") @JsonIgnore TelemetryPropertyTypeEnum telPropType;
 
     /**
      * Telemetry item associated with this telemetry property.

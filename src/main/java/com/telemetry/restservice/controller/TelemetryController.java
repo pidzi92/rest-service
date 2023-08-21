@@ -3,6 +3,7 @@ package com.telemetry.restservice.controller;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.impl.TelemetryItemServiceImpl;
+import com.telemetry.restservice.model.TelemetryItemDTO;
 import com.telemetry.restservice.util.CsvImporter;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class TelemetryController {
      * @return A filtered list of {@link TelemetryItem} objects from the database.
      */
     @PostMapping("filter")
-    public List<TelemetryItem> filter(@RequestBody List<Filter> filters){
+    public List<TelemetryItemDTO> filter(@RequestBody List<Filter> filters){
         return telemetryItemServiceImpl.filterTelemetryItems(filters);
     }
 }
