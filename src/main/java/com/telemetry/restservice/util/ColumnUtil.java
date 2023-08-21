@@ -5,10 +5,15 @@ import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 
+/**
+ * Utility class for csv columns
+ */
 @Component
 public class ColumnUtil {
 
-    //date format for CSV columns with date type and for filters
+    /**
+     * Date format for CSV columns with DATETIME type and for filters.
+     */
     public SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a");
 
     /**

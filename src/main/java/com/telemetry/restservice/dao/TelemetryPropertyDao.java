@@ -4,6 +4,9 @@ import com.telemetry.restservice.entity.TelemetryProperty;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Data Access Object (DAO) interface for interacting with TelemetryProperty entities in the database.
+ */
 @Repository
 public interface TelemetryPropertyDao extends CrudRepository<TelemetryProperty, Integer> {
 }

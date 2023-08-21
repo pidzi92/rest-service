@@ -8,7 +8,6 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.telemetry.restservice.dao.TelemetryItemDao;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
-import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class for importing CSV files into the database.
+ */
 @Slf4j
 @Component
 public class CsvImporter {
@@ -56,10 +58,22 @@ public class CsvImporter {
     }
 
     /**
-     * Importing single file into DB
+     * Transforms a CSV header to a database-friendly header.
      *
-     * @param parser - CSVParser bean
-     * @param fullFilePath - location of the CSV file
+     * @param input CSV header.
+     * @return Transformed header in a database-friendly format.
+     */
+    public String csvToDbHeader(String input) {
+        String withoutBrackets = removeTextInBrackets(input);
+        String withoutSpecialChars = removeNonAlphanumeric(withoutBrackets);
+        return toPascalCase(withoutSpecialChars);
+    }
+
+    /**
+     * Imports a single CSV file into the database.
+     *
+     * @param parser CSVParser bean.
+     * @param fullFilePath Location of the CSV file.
      */
     private void importSingleFile(CSVParser parser, String fullFilePath) throws IOException, CsvValidationException {
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(fullFilePath)).withCSVParser(parser).build()){
@@ -213,11 +227,5 @@ public class CsvImporter {
 
     private static String toPascalCase(String input) {
         return WordUtils.capitalizeFully(input).replaceAll(" ", "");
-    }
-
-    public String csvToDbHeader(String input) {
-        String withoutBrackets = removeTextInBrackets(input);
-        String withoutSpecialChars = removeNonAlphanumeric(withoutBrackets);
-        return toPascalCase(withoutSpecialChars);
     }
 }

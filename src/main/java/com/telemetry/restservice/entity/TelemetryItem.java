@@ -17,7 +17,9 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
-
+/**
+ * Entity class representing telemetry data items stored in the database.
+ */
 @Entity
 @Table(name = "telemetry_item", schema = "telemetry")
 @Data
@@ -25,8 +27,15 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class TelemetryItem implements Serializable {
+    /**
+     * Primary key for the TelemetryItem entity.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="tel_id") @JsonIgnore Long telId;
+
+    /**
+     * List of telemetry properties associated with this telemetry item.
+     */
     @OneToMany(mappedBy = "telItem", cascade = CascadeType.ALL, orphanRemoval = true) private List<TelemetryProperty> telProps;
 }

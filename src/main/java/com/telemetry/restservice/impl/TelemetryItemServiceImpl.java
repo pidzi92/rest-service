@@ -17,6 +17,9 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the TelemetryItemService interface providing methods for filtering telemetry items.
+ */
 @Service
 public class TelemetryItemServiceImpl implements TelemetryItemService {
     private final EntityManager entityManager;
@@ -33,6 +36,12 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
         this.columnUtil = columnUtil;
     }
 
+    /**
+     * Filters telemetry items based on the provided filters.
+     *
+     * @param filters List of Filter objects representing filters to apply on telemetry items.
+     * @return A list of TelemetryItem objects matching the applied filters.
+     */
     public List<TelemetryItem> filterTelemetryItems(List<Filter> filters) {
         List<Filter> validFilters =filterUtil.validateFilters(filters);
 

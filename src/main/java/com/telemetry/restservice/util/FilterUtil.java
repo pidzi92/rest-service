@@ -11,20 +11,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Utility class for validating and processing filters to be applied on telemetry items.
+ */
 @Slf4j
 @Component
 public class FilterUtil {
     @Autowired ColumnUtil columnUtil;
 
     /**
-     * Validate filters by column type and value
-     * Wrong filters will be omitted from search criteria
+     * Validates filters by column type and value.
+     * Invalid filters will be omitted from search criteria.
      *
-     * It allows specific filter operations only on specific columns.
-     * It validates value according to column type
+     * This method allows specific filter operations only on specific columns and validates values according to column types.
      *
-     * @param initialFilters - original list of filters
-     * @return - List of valid @{@link Filter} objects
+     * @param initialFilters Original list of filters.
+     * @return List of valid Filter objects.
      */
     public List<Filter> validateFilters(List<Filter> initialFilters){
         List<Filter> validFilters = new ArrayList<>();
@@ -41,6 +43,14 @@ public class FilterUtil {
         return validFilters;
     }
 
+    /**
+     * Validates the value of a filter based on the column type and the filter to the list of valid filters.
+     *
+     * @param filter Filter object.
+     * @param columnType Column type of the filter.
+     * @param value Value of the filter.
+     * @param validFilters List of valid filters.
+     */
     private void validateValue(Filter filter, TelemetryPropertyTypeEnum columnType, Object value, List<Filter> validFilters) {
         switch(columnType){
             case DOUBLE:
@@ -104,11 +114,11 @@ public class FilterUtil {
     }
 
     /**
-     * Checks if operation is valid for specific column type
+     * Checks if an operation is valid for a specific column type.
      *
-     * @param columnType - {@link TelemetryPropertyTypeEnum} object specifying the type of the column
-     * @param operation - {@link Filter} object, specifying the desired operation
-     * @return - true if operation is valid on a specified column type, else false
+     * @param columnType TelemetryPropertyTypeEnum specifying the type of the column.
+     * @param operation FilterOperationEnum specifying the desired operation.
+     * @return True if the operation is valid on the specified column type, otherwise false.
      */
     private boolean isValidOperation(TelemetryPropertyTypeEnum columnType, FilterOperationEnum operation){
         switch (operation){

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller class responsible for handling telemetry-related endpoints.
+ */
 @Api(value = "TelemetryController")
 @Slf4j
 @RestController
@@ -22,6 +25,12 @@ public class TelemetryController {
     private CsvImporter csvImporter;
     private final TelemetryItemServiceImpl telemetryItemServiceImpl;
 
+    /**
+     * Constructor for TelemetryController.
+     *
+     * @param csvImporter              The CSV importer instance for importing telemetry data.
+     * @param telemetryItemServiceImpl The service implementation for telemetry items.
+     */
     @Autowired
     public TelemetryController(CsvImporter csvImporter, TelemetryItemServiceImpl telemetryItemServiceImpl){
         this.csvImporter = csvImporter;
@@ -37,9 +46,10 @@ public class TelemetryController {
     }
 
     /**
-     * @param filters - List of @{@link Filter} to apply on the telemetry items form DB
+     * Filters telemetry items based on the provided filters.
      *
-     * @return filtered list of @{@link TelemetryItem} from DB
+     * @param filters List of {@link Filter} objects representing filters to apply on telemetry items.
+     * @return A filtered list of {@link TelemetryItem} objects from the database.
      */
     @PostMapping("filter")
     public List<TelemetryItem> filter(@RequestBody List<Filter> filters){
