@@ -38,6 +38,11 @@ Parsing can be optimized by implementing parsing in batches of rows and/or threa
 
 First the header is read. Each row in csv represents single telemetry item. Property values are dynamically assigned from column headers.
 
+If column is date, it will be parsed as integer for the query purpose. Integer from date value represent timestamp in ms
+If column is boolean, there are multiple possible values: true, "Yes", "Active", "On", 1. If Column is specified as boolean but another values in provided, it will be treated as FALSE.
+
+If value of the field is "NA", it is omitted from writing into DB
+
 ### Parsing headers
 
 For each header there is a parsing process
