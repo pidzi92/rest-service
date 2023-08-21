@@ -23,13 +23,13 @@ public class TelemetryItemDTOSerializer extends JsonSerializer<TelemetryItemDTO>
      */
     @Override
     public void serialize(TelemetryItemDTO telemetryItemDTO, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeStartObject();
-
-        Map<String, String> telProps = telemetryItemDTO.getTelProps();
-        for (Map.Entry<String, String> entry : telProps.entrySet()) {
-            jsonGenerator.writeStringField(entry.getKey(), entry.getValue());
+        if (telemetryItemDTO!=null){
+            jsonGenerator.writeStartObject();
+            Map<String, String> telProps = telemetryItemDTO.getTelProps();
+            for (Map.Entry<String, String> entry : telProps.entrySet()) {
+                jsonGenerator.writeStringField(entry.getKey(), entry.getValue());
+            }
+            jsonGenerator.writeEndObject();
         }
-
-        jsonGenerator.writeEndObject();
     }
 }
