@@ -64,7 +64,7 @@ For more info check this links
 
 Once the application is started, endpoints will be available on port 8080 by default. To change the port, please check application.properties
 
-To check all available endpoints, use [swagger](http://localhost:8080/swagger-ui.html#) once the application is started, or use this postman collection: [Telemetry.postman_collection.json](..%2F..%2FOneDrive%2FDesktop%2FTelemetry.postman_collection.json) 
+To check all available endpoints, use [swagger](http://localhost:8080/swagger-ui.html#) once the application is started, or use this postman collection: [Telemetry.postman_collection.json](Telemetry.postman_collection.json) 
 
 ## Other
 1. There is just one application.properties file. Multiple files can be added for different environments so that spring-boot profiles can be utilized

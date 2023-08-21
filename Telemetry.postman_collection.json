@@ -1,0 +1,87 @@
+{
+	"info": {
+		"_postman_id": "5614dae2-2d36-4d1a-a872-17e13a4d1f51",
+		"name": "Telemetry",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1668200"
+	},
+	"item": [
+		{
+			"name": "Filter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Name</th>\r",
+							"        <th>Value</th>\r",
+							"        <th>Type</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each response.0.telProps}}\r",
+							"        <tr>\r",
+							"            <td>{{telPropName}}</td>\r",
+							"            <td>{{telPropValue}}</td>\r",
+							"            <td>{{telPropType}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"field\": \"SerialNumber\",\r\n    \"value\": \"A5304997\"\r\n  },\r\n  {\r\n    \"field\": \"DateTime\",\r\n    \"operation\": \"LessThan\",\r\n    \"value\": \"Mar 31, 2023, 6:00:00 AM\"\r\n  }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/filter",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"filter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ImportCsv",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
