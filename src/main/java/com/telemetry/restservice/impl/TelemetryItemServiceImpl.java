@@ -4,6 +4,7 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.model.TelemetryItemDTO;
+import com.telemetry.restservice.model.TelemetryPropertyDTO;
 import com.telemetry.restservice.service.TelemetryItemService;
 import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
@@ -17,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the TelemetryItemService interface providing methods for filtering telemetry items.
@@ -79,12 +81,6 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
         return dtoList;
     }
 
-
-    public TelemetryItemDTO convertToDTO(TelemetryItem telemetryItem) {
-        TelemetryItemDTO dto = new TelemetryItemDTO();
-        dto.setTelProps(telemetryItem.getTelProps());
-        return dto;
-    }
     private Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
         switch (filter.getOperation()) {
             case Equals:
@@ -110,5 +106,23 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
             default:
                 throw new IllegalArgumentException("Unsupported operation: " + filter.getOperation());
         }
+    }
+
+    private TelemetryPropertyDTO convertToPropertyDTO(TelemetryProperty telemetryProperty) {
+        TelemetryPropertyDTO dto = new TelemetryPropertyDTO();
+        dto.setTelPropName(telemetryProperty.getTelPropName());
+        dto.setTelPropValue(telemetryProperty.getTelPropValue());
+        return dto;
+    }
+
+    private TelemetryItemDTO convertToDTO(TelemetryItem telemetryItem) {
+        TelemetryItemDTO dto = new TelemetryItemDTO();
+
+        List<TelemetryPropertyDTO> propertyDTOs = telemetryItem.getTelProps().stream()
+                .map(this::convertToPropertyDTO)
+                .collect(Collectors.toList());
+
+        dto.setTelProps(propertyDTOs);
+        return dto;
     }
 }
