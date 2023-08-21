@@ -16,6 +16,16 @@ import java.util.List;
 public class FilterUtil {
     @Autowired ColumnUtil columnUtil;
 
+    /**
+     * Validate filters by column type and value
+     * Wrong filters will be omitted from search criteria
+     *
+     * It allows specific filter operations only on specific columns.
+     * It validates value according to column type
+     *
+     * @param initialFilters - original list of filters
+     * @return - List of valid @{@link Filter} objects
+     */
     public List<Filter> validateFilters(List<Filter> initialFilters){
         List<Filter> validFilters = new ArrayList<>();
 
@@ -26,12 +36,12 @@ public class FilterUtil {
                 continue;
             }
             Object value = filter.getValue();
-            validateSingleFilter(filter, columnType, value, validFilters);
+            validateValue(filter, columnType, value, validFilters);
         }
         return validFilters;
     }
 
-    private void validateSingleFilter(Filter filter, TelemetryPropertyTypeEnum columnType, Object value, List<Filter> validFilters) {
+    private void validateValue(Filter filter, TelemetryPropertyTypeEnum columnType, Object value, List<Filter> validFilters) {
         switch(columnType){
             case DOUBLE:
                if (value instanceof Double){
@@ -42,7 +52,7 @@ public class FilterUtil {
                }
                 break;
             case INTEGER:
-                if (value instanceof  Integer){
+                if (value instanceof Integer){
                     validFilters.add(filter);
                 }else{
                     log.error("Invalid filter, omitted: {}", filter);
@@ -50,7 +60,7 @@ public class FilterUtil {
                 }
                 break;
             case STRING:
-                if (value instanceof  String){
+                if (value instanceof String){
                     validFilters.add(filter);
                 }else{
                     log.error("Invalid filter, omitted: {}", filter);
@@ -59,6 +69,7 @@ public class FilterUtil {
                 break;
             case DATETIME:
                 try {
+                    // convert to ms representation for easier comparison
                     Date dateValue = columnUtil.dateFormat.parse(value.toString());
                     filter.setValue(dateValue.toInstant().toEpochMilli());
                     validFilters.add(filter);
@@ -68,16 +79,37 @@ public class FilterUtil {
                 }
                 break;
             case BOOLEAN:
-                if (value instanceof  Boolean){
+                if (value instanceof Boolean){
+                    filter.setValue((Boolean) value ? 1 : 0);
                     validFilters.add(filter);
                 }else{
-                    log.error("Invalid filter, omitted: {}", filter);
-                    return;
+                    if (value instanceof String){
+
+                        String lowerCaseValue = ((String) value).toLowerCase();
+
+                        filter.setValue(String.valueOf(lowerCaseValue.equals("yes")
+                                || lowerCaseValue.equals("active")
+                                || lowerCaseValue.equals("on")
+                                || lowerCaseValue.equals("true")
+                                || lowerCaseValue.equals("1") ? 1 : 0));
+
+                        validFilters.add(filter);
+                    }else{
+                        log.error("Invalid filter, omitted: {}", filter);
+                        return;
+                    }
                 }
                 break;
         }
     }
 
+    /**
+     * Checks if operation is valid for specific column type
+     *
+     * @param columnType - {@link TelemetryPropertyTypeEnum} object specifying the type of the column
+     * @param operation - {@link Filter} object, specifying the desired operation
+     * @return - true if operation is valid on a specified column type, else false
+     */
     private boolean isValidOperation(TelemetryPropertyTypeEnum columnType, FilterOperationEnum operation){
         switch (operation){
             case Contains:

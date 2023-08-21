@@ -1,12 +1,22 @@
 package com.telemetry.restservice.util;
 
+import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.model.TelemetryPropertyTypeEnum;
 import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 
 @Component
 public class ColumnUtil {
+
+    //date format for CSV columns with date type and for filters
     public SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a");
+
+    /**
+     * Returns column type for predefined headers. If the header is not predefined, it will return string.
+     *
+     * @param dbHeader - Title of column
+     * @return - @{@link TelemetryPropertyTypeEnum} object, specifying column type
+     */
     public TelemetryPropertyTypeEnum getColumnType(String dbHeader){
 
         switch(dbHeader){

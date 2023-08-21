@@ -36,20 +36,32 @@ public class CsvImporter {
     @Value("${telemetry.source.csv.root}")
     private String csvSourceFolder;
 
+    /**
+     * Imports CSV files from specified folder on csvSourceFolder into DB
+     */
+
     public void csvToDb(){
         CSVParser parser = new CSVParserBuilder().withIgnoreQuotations(true).withSeparator(';').build();
-
 
         List<String> allFiles = queryCsvFiles(csvSourceFolder);
 
         for (String file: allFiles) {
-            importSingleFile(parser, file);
+            try {
+                importSingleFile(parser, file);
+            } catch (IOException | CsvValidationException e) {
+                log.error("Error while importing file");
+            }
             moveFileToSubfolder(file);
         }
-
     }
 
-    private void importSingleFile(CSVParser parser, String fullFilePath) {
+    /**
+     * Importing single file into DB
+     *
+     * @param parser - CSVParser bean
+     * @param fullFilePath - location of the CSV file
+     */
+    private void importSingleFile(CSVParser parser, String fullFilePath) throws IOException, CsvValidationException {
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(fullFilePath)).withCSVParser(parser).build()){
             String[] singleRow = reader.readNext();
             String[] headers = singleRow;
@@ -66,17 +78,17 @@ public class CsvImporter {
             while((singleRow = reader.readNext()) != null){
                 TelemetryItem telItem = TelemetryItem.builder().build();
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
-                for (int i=0; i< headers.length; i++){
+                for (int i = 0; i< headers.length; i++){
 
                     String value = singleRow[i];
-                    if (columnUtil.getColumnType(headers[i]) == TelemetryPropertyTypeEnum.DATETIME){
-                        try {
-                            value = String.valueOf(columnUtil.dateFormat.parse(value).toInstant().toEpochMilli());
-                        } catch (ParseException e) {
-                            log.error("Wrong data format. Csv column skipped: {}", Arrays.toString(singleRow));
-                            break;
-                        }
+
+                    // Seems like NA means not available, according to CSV samples
+                    // In such case, skip property save
+                    if (value.equals("NA")){
+                        continue;
                     }
+
+                    value = convertSpecificTypesToString(headers, i, value, singleRow);
 
                     TelemetryProperty prop = TelemetryProperty.builder()
                             .telPropName(headers[i])
@@ -92,12 +104,44 @@ public class CsvImporter {
             }
             telemetryItemDao.saveAll(telemetryItems);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            log.error("File {} not found. Skipping.", fullFilePath);
+            throw e;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("File {} cannot be read. Skipping.", fullFilePath);
+            throw e;
         } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
+            log.error("File {} is corrupted or not in appropriate CSV format. Skipping.", fullFilePath);
+            throw e;
         }
+    }
+
+    private String convertSpecificTypesToString(String[] headers, int i, String value, String[] singleRow) {
+        // Database design suggest that all property values are saved in tel_prop_value as strings.
+        // A bit of transformation, so it is easier for comparison later.
+        switch (columnUtil.getColumnType(headers[i])) {
+            case DATETIME:
+                //if we convert datetime to int (ms)
+                try {
+                    return String.valueOf(columnUtil.dateFormat.parse(value).toInstant().toEpochMilli());
+                } catch (ParseException e) {
+                    log.error("Wrong data format. Csv column skipped: {}", Arrays.toString(singleRow));
+                    break;
+                }
+            case BOOLEAN:
+                //here are all possible values for boolean type, according to the CSV file.
+                //this may be also exported into some kind of enum
+                String lowerCaseValue = value.toLowerCase();
+                return String.valueOf(lowerCaseValue.equals("yes")
+                        || lowerCaseValue.equals("active")
+                        || lowerCaseValue.equals("on")
+                        || lowerCaseValue.equals("true")
+                        || lowerCaseValue.equals("1") ? 1 : 0);
+            default:
+                // No transformation needed.
+                return value;
+        }
+        // Header is not predefined. Consider it string.
+        return value;
     }
 
     private List<String> queryCsvFiles(String folderPath) {
@@ -108,7 +152,7 @@ public class CsvImporter {
 
         // Check if the path corresponds to a directory
         if (folder.isDirectory()) {
-            // Create a FilenameFilter to filter CSV files
+            // Create a FilenameFilter to filter CSV files starting with ld_a or ld_c
             FilenameFilter csvFileFilter = (dir, name) ->
                     (name.toLowerCase().startsWith("ld_a")
                     || name.toLowerCase().startsWith("ld_c")) &&
