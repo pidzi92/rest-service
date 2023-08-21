@@ -1,5 +1,5 @@
 # rest-service
-This is simple app that is processing CSV files and importing rows into in memory H@ database.
+This is simple app that is processing CSV files and importing rows into in memory H2 database.
 
 ## Starting from IDE
 ### Prerequisites
@@ -38,7 +38,8 @@ Parsing can be optimized by implementing parsing in batches of rows and/or threa
 
 First the header is read. Each row in csv represents single telemetry item. Property values are dynamically assigned from column headers.
 
-If column is date, it will be parsed as integer for the query purpose. Integer from date value represent timestamp in ms
+If column is date, it will be parsed as integer for the query purpose. Integer from date value represent timestamp in ms.
+
 If column is boolean, there are multiple possible values: true, "Yes", "Active", "On", 1. If Column is specified as boolean but another values in provided, it will be treated as FALSE.
 
 If value of the field is "NA", it is omitted from writing into DB
@@ -58,8 +59,8 @@ Ambient temperature [°C] -> AmbientTemperature
 After the file is processed, it will be moved into PROCESSED subfolder
 
 ## DAO
-This layer can be optimized by using Page and Pageable
-For more info check this links
+This layer can be optimized by using Page and Pageable.
+For more info check these links:
 
 [Page](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html)
 
