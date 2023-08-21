@@ -16,8 +16,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +116,19 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
     private TelemetryPropertyDTO convertToPropertyDTO(TelemetryProperty telemetryProperty) {
         TelemetryPropertyDTO dto = new TelemetryPropertyDTO();
         dto.setTelPropName(telemetryProperty.getTelPropName());
-        dto.setTelPropValue(telemetryProperty.getTelPropValue());
+        switch (telemetryProperty.getTelPropType()){
+            case BOOLEAN:
+                dto.setTelPropValue(telemetryProperty.getTelPropValue().equals("1") ? "Yes" : "No");
+                break;
+            case  DATETIME:
+                Date date = new Date(Long.parseLong(telemetryProperty.getTelPropValue()));
+                String formattedDateTime = columnUtil.dateFormat.format(date);
+                dto.setTelPropValue(formattedDateTime);
+                break;
+            default:
+                dto.setTelPropValue(telemetryProperty.getTelPropValue());
+        }
+
         return dto;
     }
 
