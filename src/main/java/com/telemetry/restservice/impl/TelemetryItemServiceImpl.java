@@ -44,7 +44,7 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
      * Filters telemetry items based on the provided filters.
      *
      * @param filters List of Filter objects representing filters to apply on telemetry items.
-     * @return A list of TelemetryItem objects matching the applied filters.
+     * @return A list of TelemetryItemDTO objects matching the applied filters.
      */
     public List<TelemetryItemDTO> filterTelemetryItems(List<Filter> filters) {
         List<Filter> validFilters =filterUtil.validateFilters(filters);

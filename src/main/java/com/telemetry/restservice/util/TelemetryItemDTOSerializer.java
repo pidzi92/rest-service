@@ -7,7 +7,20 @@ import com.telemetry.restservice.model.TelemetryItemDTO;
 import java.io.IOException;
 import java.util.Map;
 
+
+/**
+ * Custom Jackson JSON serializer for serializing TelemetryItemDTO objects.
+ */
 public class TelemetryItemDTOSerializer extends JsonSerializer<TelemetryItemDTO> {
+
+    /**
+     * Serializes a TelemetryItemDTO object as a JSON object with key-value pairs.
+     *
+     * @param telemetryItemDTO   The TelemetryItemDTO object to be serialized.
+     * @param jsonGenerator      The JsonGenerator used to write the JSON content.
+     * @param serializerProvider The SerializerProvider for accessing serializers.
+     * @throws IOException If an I/O error occurs during serialization.
+     */
     @Override
     public void serialize(TelemetryItemDTO telemetryItemDTO, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
