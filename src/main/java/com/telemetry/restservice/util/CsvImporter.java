@@ -30,7 +30,7 @@ import java.util.List;
 @Component
 public class CsvImporter {
 
-    public static final String PROCESSED_SUBFOLDER = "PROCESSED";
+    private static final String PROCESSED_SUBFOLDER = "PROCESSED";
     @Autowired
     private TelemetryItemDao telemetryItemDao;
     @Autowired ColumnUtil columnUtil;
@@ -63,7 +63,7 @@ public class CsvImporter {
      * @param input CSV header.
      * @return Transformed header in a database-friendly format.
      */
-    public String csvToDbHeader(String input) {
+    private String csvToDbHeader(String input) {
         String withoutBrackets = removeTextInBrackets(input);
         String withoutSpecialChars = removeNonAlphanumeric(withoutBrackets);
         return toPascalCase(withoutSpecialChars);
