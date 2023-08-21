@@ -4,7 +4,6 @@ import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.model.Filter;
 import com.telemetry.restservice.model.TelemetryItemDTO;
-import com.telemetry.restservice.model.TelemetryPropertyDTO;
 import com.telemetry.restservice.service.TelemetryItemService;
 import com.telemetry.restservice.util.ColumnUtil;
 import com.telemetry.restservice.util.FilterUtil;
@@ -16,14 +15,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * Implementation of the TelemetryItemService interface providing methods for filtering telemetry items.
@@ -113,32 +109,26 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
         }
     }
 
-    private TelemetryPropertyDTO convertToPropertyDTO(TelemetryProperty telemetryProperty) {
-        TelemetryPropertyDTO dto = new TelemetryPropertyDTO();
-        dto.setTelPropName(telemetryProperty.getTelPropName());
-        switch (telemetryProperty.getTelPropType()){
-            case BOOLEAN:
-                dto.setTelPropValue(telemetryProperty.getTelPropValue().equals("1") ? "Yes" : "No");
-                break;
-            case  DATETIME:
-                Date date = new Date(Long.parseLong(telemetryProperty.getTelPropValue()));
-                String formattedDateTime = columnUtil.dateFormat.format(date);
-                dto.setTelPropValue(formattedDateTime);
-                break;
-            default:
-                dto.setTelPropValue(telemetryProperty.getTelPropValue());
-        }
-
-        return dto;
-    }
-
     private TelemetryItemDTO convertToDTO(TelemetryItem telemetryItem) {
         TelemetryItemDTO dto = new TelemetryItemDTO();
+        Map<String, String> propertyDTOs = new HashMap<>();
+        for (TelemetryProperty prop:telemetryItem.getTelProps()) {
 
-        List<TelemetryPropertyDTO> propertyDTOs = telemetryItem.getTelProps().stream()
-                .map(this::convertToPropertyDTO)
-                .collect(Collectors.toList());
-
+            String parsedValue;
+            switch (prop.getTelPropType()){
+                case BOOLEAN:
+                  parsedValue = prop.getTelPropValue().equals("1") ? "Yes" : "No";
+                    break;
+                case  DATETIME:
+                    Date date = new Date(Long.parseLong(prop.getTelPropValue()));
+                    String formattedDateTime = columnUtil.dateFormat.format(date);
+                    parsedValue = formattedDateTime;
+                    break;
+                default:
+                   parsedValue = prop.getTelPropValue();
+            }
+            propertyDTOs.put(prop.getTelPropName(), parsedValue);
+        }
         dto.setTelProps(propertyDTOs);
         return dto;
     }
