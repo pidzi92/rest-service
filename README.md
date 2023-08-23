@@ -66,11 +66,159 @@ For more info check these links:
 
 [Pageable](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html)
 
-## Endpoints
+# Endpoints
 
 Once the application is started, endpoints will be available on port 8080 by default. To change the port, please check application.properties
 
-To check all available endpoints, use [swagger](http://localhost:8080/swagger-ui.html#) once the application is started, or use this postman collection: [Telemetry.postman_collection.json](Telemetry.postman_collection.json) 
+To check all available endpoints, use [swagger](http://localhost:8080/swagger-ui.html#) once the application is started, or use this postman collection: [Telemetry.postman_collection.json](Telemetry.postman_collection.json)
+
+## Base URL
+
+The base URL for all the endpoints is: `http://localhost:{PORT}`
+
+## Endpoints
+
+### 1. Import CSV
+
+Imports CSV files from the directory described in application.properties as `telemetry.source.csv.root`
+
+- **Endpoint:** `/importCsv`
+- **Method:** GET
+- **Parameters:** None
+
+### 1. Filter
+
+Get details about telemetry items with specified filters.
+
+- **Endpoint:** `filter`
+- **Method:** POST
+- **Parameters:** None
+- **Body**
+  ```json
+  [
+      {
+        "field": "SerialNumber",
+        "value": "A5304997"
+      },
+      {
+        "field": "DateTime",
+        "operation": "LessThan",
+        "value": "Mar 31, 2023, 6:00:00 AM"
+      },
+      {
+        "field": "AllWheelDriveStatus",
+        "value": false
+      }
+  ]
+
+#### Filters!
+Each filter can have 
+1. field
+   - String representation of the header, in PascalCase, without special characters or measurement unit.
+         If CSV header is `Ambient temperature [°C]` , then the filter field will be `AmbientTemperature`
+2. operation
+   - String representation for operation. If omitted, `Equals` will be used. 
+   Possible values:
+      1. `Equals` - Applicable for all types
+      2. `GreaterThan` - Applicable for Integer, Decimal and Date
+      3. `LessThan` - Applicable for Integer, Decimal and Date
+      4. `Contains` - Applicable for String
+3. value
+   - filter value in corresponding format:
+      1. `Date` - String representation of the date in this format: `"Mar 31, 2023, 6:00:00 AM"`
+      2. `Integer` - Integer value must be supplied in integer format. Example: `4` will work, but `"4"` will not work
+      3. `Float` - Decimal value must be supplied in decimal format. Example: `1.5` will work, but `"1.5"`  will not work
+      4. `String` - String value for the filter
+      5. `Boolean` - Possible values are `true`, `"true"`,`1`, `"Yes"`, `"Active"`, `"On"`. Everything else is considered false, including `"1"`
+- **Response:**
+  ```json
+  [
+    {
+        "SpeedFrontPto": "0",
+        "GpsLatitude": "45.3649462",
+        "EngineSpeed": "749",
+        "CoolantTemperature": "35",
+        "MachineType": "Tractor",
+        "AmbientTemperature": "10.59",
+        "ActualStatusOfCreeper": "No",
+        "EngineLoad": "52",
+        "AllWheelDriveStatus": "No",
+        "DateTime": "Mar 31, 2023, 5:59:27 AM",
+        "GroundSpeedGearbox": "2.74",
+        "SerialNumber": "A5304997",
+        "GpsLongitude": "20.4154291",
+        "CurrentGearShift": "5",
+        "TransverseDifferentialLockStatus": "0",
+        "SpeedRearPto": "0",
+        "TotalWorkingHoursCounter": "1185.45",
+        "FuelConsumption": "3.9",
+        "ParkingBrakeStatus": "3"
+    },
+    {
+        "SpeedFrontPto": "0",
+        "GpsLatitude": "45.3649839",
+        "EngineSpeed": "1033",
+        "CoolantTemperature": "35",
+        "MachineType": "Tractor",
+        "AmbientTemperature": "10.59",
+        "ActualStatusOfCreeper": "No",
+        "EngineLoad": "40",
+        "AllWheelDriveStatus": "No",
+        "DateTime": "Mar 31, 2023, 5:59:37 AM",
+        "GroundSpeedGearbox": "5.11",
+        "SerialNumber": "A5304997",
+        "GpsLongitude": "20.4153116",
+        "CurrentGearShift": "5",
+        "TransverseDifferentialLockStatus": "0",
+        "SpeedRearPto": "0",
+        "TotalWorkingHoursCounter": "1185.45",
+        "FuelConsumption": "4.05",
+        "ParkingBrakeStatus": "3"
+    },
+    {
+        "SpeedFrontPto": "0",
+        "GpsLatitude": "45.3650186",
+        "EngineSpeed": "1162",
+        "CoolantTemperature": "36",
+        "MachineType": "Tractor",
+        "AmbientTemperature": "10.59",
+        "ActualStatusOfCreeper": "No",
+        "EngineLoad": "64",
+        "AllWheelDriveStatus": "No",
+        "DateTime": "Mar 31, 2023, 5:59:47 AM",
+        "GroundSpeedGearbox": "5.8",
+        "SerialNumber": "A5304997",
+        "GpsLongitude": "20.4151243",
+        "CurrentGearShift": "5",
+        "TransverseDifferentialLockStatus": "0",
+        "SpeedRearPto": "0",
+        "TotalWorkingHoursCounter": "1185.45",
+        "FuelConsumption": "5.95",
+        "ParkingBrakeStatus": "3"
+    },
+    {
+        "SpeedFrontPto": "0",
+        "GpsLatitude": "45.3650846",
+        "EngineSpeed": "1406",
+        "CoolantTemperature": "37",
+        "MachineType": "Tractor",
+        "AmbientTemperature": "10.59",
+        "ActualStatusOfCreeper": "No",
+        "EngineLoad": "62",
+        "AllWheelDriveStatus": "No",
+        "DateTime": "Mar 31, 2023, 5:59:57 AM",
+        "GroundSpeedGearbox": "6.89",
+        "SerialNumber": "A5304997",
+        "GpsLongitude": "20.4149342",
+        "CurrentGearShift": "5",
+        "TransverseDifferentialLockStatus": "0",
+        "SpeedRearPto": "0",
+        "TotalWorkingHoursCounter": "1185.46",
+        "FuelConsumption": "7.2",
+        "ParkingBrakeStatus": "3"
+    }
+  ]
+
 
 ## Other
 1. There is just one application.properties file. Multiple files can be added for different environments so that spring-boot profiles can be utilized
