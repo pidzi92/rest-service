@@ -17,7 +17,18 @@ import java.util.List;
 @Slf4j
 @Component
 public class FilterUtil {
-    @Autowired ColumnUtil columnUtil;
+    private final String INVALID_FILTER_OMITTED_ERROR_LOG = "Invalid filter, omitted: {}";
+    private final ColumnUtil columnUtil;
+
+    /**
+     * Constructor for the FilterUtil class. This class provides utility methods for filtering data.
+     *
+     * @param columnUtil An instance of the ColumnUtil class used for column-related operations.
+     */
+    @Autowired
+    public FilterUtil(ColumnUtil columnUtil) {
+        this.columnUtil = columnUtil;
+    }
 
     /**
      * Validates filters by column type and value.
@@ -34,7 +45,7 @@ public class FilterUtil {
         for (Filter filter: initialFilters) {
             TelemetryPropertyTypeEnum columnType = columnUtil.getColumnType(filter.getField());
             if (!isValidOperation(columnType, filter.getOperation())) {
-                log.error("Invalid filter, omitted: {}", filter);
+                log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                 continue;
             }
             Object value = filter.getValue();
@@ -57,7 +68,7 @@ public class FilterUtil {
                if (value instanceof Double){
                    validFilters.add(filter);
                }else{
-                   log.error("Invalid filter, omitted: {}", filter);
+                   log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                    return;
                }
                 break;
@@ -65,7 +76,7 @@ public class FilterUtil {
                 if (value instanceof Integer){
                     validFilters.add(filter);
                 }else{
-                    log.error("Invalid filter, omitted: {}", filter);
+                    log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                     return;
                 }
                 break;
@@ -73,7 +84,7 @@ public class FilterUtil {
                 if (value instanceof String){
                     validFilters.add(filter);
                 }else{
-                    log.error("Invalid filter, omitted: {}", filter);
+                    log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                     return;
                 }
                 break;
@@ -84,7 +95,7 @@ public class FilterUtil {
                     filter.setValue(dateValue.toInstant().toEpochMilli());
                     validFilters.add(filter);
                 }catch (ParseException e){
-                    log.error("Invalid filter, omitted: {}", filter);
+                    log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                     return;
                 }
                 break;
@@ -105,7 +116,7 @@ public class FilterUtil {
 
                         validFilters.add(filter);
                     }else{
-                        log.error("Invalid filter, omitted: {}", filter);
+                        log.error(INVALID_FILTER_OMITTED_ERROR_LOG, filter);
                         return;
                     }
                 }

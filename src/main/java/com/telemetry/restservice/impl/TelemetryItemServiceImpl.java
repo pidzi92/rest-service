@@ -28,12 +28,23 @@ import java.util.Map;
 @Slf4j
 @Service
 public class TelemetryItemServiceImpl implements TelemetryItemService {
+    private static final String TEL_PROP_VALUE = "telPropValue";
+    private static final String TEL_PROPS = "telProps";
+    private static final String TEL_PROP_NAME = "telPropName";
     private final EntityManager entityManager;
 
     private final FilterUtil filterUtil;
 
     private final ColumnUtil columnUtil;
 
+    /**
+     * Constructor for the TelemetryItemServiceImpl class. This class provides an implementation
+     * of the TelemetryItemService interface, offering methods for working with telemetry items.
+     *
+     * @param entityManager The JPA EntityManager used for database interactions.
+     * @param filterUtil An instance of the FilterUtil class used for filtering data.
+     * @param columnUtil An instance of the ColumnUtil class used for column-related operations.
+     */
     @Autowired
     public TelemetryItemServiceImpl(
             EntityManager entityManager, FilterUtil filterUtil,  ColumnUtil columnUtil) {
@@ -58,11 +69,11 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
         List<Predicate> predicates = new ArrayList<>();
         for (Filter filter : validFilters) {
             Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin =
-                    telemetryItemRoot.join("telProps");
+                    telemetryItemRoot.join(TEL_PROPS);
 
             Predicate propertyPredicate = criteriaBuilder.and(
                     criteriaBuilder.equal(
-                            telemetryPropertyJoin.get("telPropName"),
+                            telemetryPropertyJoin.get(TEL_PROP_NAME),
                             filter.getField()), getPropValueFilter(filter, criteriaBuilder, telemetryPropertyJoin)
             );
 
@@ -87,25 +98,25 @@ public class TelemetryItemServiceImpl implements TelemetryItemService {
     private Predicate getPropValueFilter(Filter filter, CriteriaBuilder criteriaBuilder, Join<TelemetryItem, TelemetryProperty> telemetryPropertyJoin) {
         switch (filter.getOperation()) {
             case Equals:
-                return criteriaBuilder.equal(telemetryPropertyJoin.get("telPropValue"), filter.getValue().toString());
+                return criteriaBuilder.equal(telemetryPropertyJoin.get(TEL_PROP_VALUE), filter.getValue().toString());
             case LessThan:
                 switch (columnUtil.getColumnType(filter.getField())){
                     case DOUBLE:
-                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get(TEL_PROP_VALUE), (Double) filter.getValue());
                     case INTEGER:
                     case DATETIME:
-                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get("telPropValue"), (Long) filter.getValue());
+                        return criteriaBuilder.lessThan(telemetryPropertyJoin.get(TEL_PROP_VALUE), (Long) filter.getValue());
                 }
             case GreaterThan:
                 switch (columnUtil.getColumnType(filter.getField())) {
                     case DOUBLE:
-                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get("telPropValue"), (Double) filter.getValue());
+                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get(TEL_PROP_VALUE), (Double) filter.getValue());
                     case INTEGER:
                     case DATETIME:
-                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get("telPropValue"), (Long) filter.getValue());
+                        return criteriaBuilder.greaterThan(telemetryPropertyJoin.get(TEL_PROP_VALUE), (Long) filter.getValue());
                 }
             case Contains:
-                return criteriaBuilder.like(telemetryPropertyJoin.get("telPropValue"), "%" + filter.getValue() + "%");
+                return criteriaBuilder.like(telemetryPropertyJoin.get(TEL_PROP_VALUE), "%" + filter.getValue() + "%");
             default:
                 throw new IllegalArgumentException("Unsupported operation: " + filter.getOperation());
         }

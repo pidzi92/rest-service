@@ -226,3 +226,4 @@ Each filter can have
 3. There is no authentication of any kind. Everyone can write or read from DB with this solution
 4. There is no secret management implemented of any kind. DB user and pass are in application.properties in plain text!
 5. Exception handling can be way better. [Exception Handling](https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc). My choice is @ControllerAdvice
+6. Custom Exceptions can be created, and generally handling pieces of code where log.error + return is used

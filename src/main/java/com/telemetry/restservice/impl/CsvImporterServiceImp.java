@@ -34,21 +34,32 @@ import java.util.List;
 public class CsvImporterServiceImp implements CsvImporterService {
 
     private static final String PROCESSED_SUBFOLDER = "PROCESSED";
-    public static final String MACHINE_TYPE_PROP = "MachineType";
-    public static final String NOT_APPLICABLE = "NA";
-    public static final String MACHINE_TYPE_TRACTOR = "Tractor";
-    public static final String MACHONE_TYPE_COMBINE = "Combine";
-    public static final String MACHINE_TYPE_UNKNOWN = "Unknown";
-    String TRACTOR_PATTERN = "ld_a.*";
-    String COMBINE_PATTERN = "ld_c.*";
+    private static final String MACHINE_TYPE_PROP = "MachineType";
+    private static final String NOT_APPLICABLE = "NA";
+    private static final String MACHINE_TYPE_TRACTOR = "Tractor";
+    private static final String MACHINE_TYPE_COMBINE = "Combine";
+    private static final String MACHINE_TYPE_UNKNOWN = "Unknown";
+    private static final String TRACTOR_PATTERN = "ld_a.*";
+    private static final String COMBINE_PATTERN = "ld_c.*";
 
-    @Autowired
-    private TelemetryItemDao telemetryItemDao;
-    @Autowired
-    ColumnUtil columnUtil;
+    private final TelemetryItemDao telemetryItemDao;
+    private final ColumnUtil columnUtil;
 
     @Value("${telemetry.source.csv.root}")
     private String csvSourceFolder;
+
+    /**
+     * Constructor for the CsvImporterServiceImpl class. This class provides an implementation
+     * of the CsvImporterService interface, offering methods for importing CSV data.
+     *
+     * @param telemetryItemDao The data access object (DAO) for TelemetryItem, used for database interactions.
+     * @param columnUtil An instance of the ColumnUtil class used for column-related operations.
+     */
+    @Autowired
+    public CsvImporterServiceImp(TelemetryItemDao telemetryItemDao, ColumnUtil columnUtil) {
+        this.telemetryItemDao = telemetryItemDao;
+        this.columnUtil = columnUtil;
+    }
 
     /**
      * Imports CSV files from specified folder on csvSourceFolder into DB
@@ -110,6 +121,7 @@ public class CsvImporterServiceImp implements CsvImporterService {
                 TelemetryItem telItem = TelemetryItem.builder().build();
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
 
+                // add machine type property
                 TelemetryProperty machineTypeProp = TelemetryProperty.builder()
                         .telPropName(MACHINE_TYPE_PROP)
                         .telPropValue(machineType)
@@ -162,7 +174,7 @@ public class CsvImporterServiceImp implements CsvImporterService {
         if (lowercaseFileName.matches(TRACTOR_PATTERN)) {
             return MACHINE_TYPE_TRACTOR;
         } else if (lowercaseFileName.matches(COMBINE_PATTERN)) {
-            return MACHONE_TYPE_COMBINE;
+            return MACHINE_TYPE_COMBINE;
         } else {
             log.info("Unknown machine type: {}", fullFilePath );
             return MACHINE_TYPE_UNKNOWN;
