@@ -40,7 +40,7 @@ First the header is read. Each row in csv represents single telemetry item. Prop
 
 If column is date, it will be parsed as integer for the query purpose. Integer from date value represent timestamp in ms.
 
-If column is boolean, there are multiple possible values: true, "Yes", "Active", "On", 1. If Column is specified as boolean but another values in provided, it will be treated as FALSE.
+If column is boolean, there are multiple possible values: true, "Yes", "Active", "On", 1. If Column is specified as boolean but another value is provided, it will be treated as FALSE.
 
 If value of the field is "NA", it is omitted from writing into DB
 
@@ -90,7 +90,7 @@ Imports CSV files from the directory described in application.properties as `tel
 
 Get details about telemetry items with specified filters.
 
-- **Endpoint:** `filter`
+- **Endpoint:** `/filter`
 - **Method:** POST
 - **Parameters:** None
 - **Body**
