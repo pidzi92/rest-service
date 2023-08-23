@@ -34,6 +34,14 @@ import java.util.List;
 public class CsvImporterServiceImp implements CsvImporterService {
 
     private static final String PROCESSED_SUBFOLDER = "PROCESSED";
+    public static final String MACHINE_TYPE_PROP = "MachineType";
+    public static final String NOT_APPLICABLE = "NA";
+    public static final String MACHINE_TYPE_TRACTOR = "Tractor";
+    public static final String MACHONE_TYPE_COMBINE = "Combine";
+    public static final String MACHINE_TYPE_UNKNOWN = "Unknown";
+    String TRACTOR_PATTERN = "ld_a.*";
+    String COMBINE_PATTERN = "ld_c.*";
+
     @Autowired
     private TelemetryItemDao telemetryItemDao;
     @Autowired
@@ -63,13 +71,17 @@ public class CsvImporterServiceImp implements CsvImporterService {
     /**
      * Transforms a CSV header to a database-friendly header.
      *
-     * @param input CSV header.
+     * @param csvHeader CSV header.
      * @return Transformed header in a database-friendly format.
      */
-    private String csvToDbHeader(String input) {
-        String withoutBrackets = removeTextInBrackets(input);
+
+    private String csvToDbHeader(String csvHeader) {
+        log.debug("CSV header received: {}", csvHeader);
+        String withoutBrackets = removeTextInBrackets(csvHeader);
         String withoutSpecialChars = removeNonAlphanumeric(withoutBrackets);
-        return toPascalCase(withoutSpecialChars);
+        String dbHeader = toPascalCase(withoutSpecialChars);
+        log.debug("DB header after transformation: {}", dbHeader);
+        return dbHeader;
     }
 
     /**
@@ -92,16 +104,27 @@ public class CsvImporterServiceImp implements CsvImporterService {
             }
             List<TelemetryItem> telemetryItems = new ArrayList<>();
 
+            String machineType = getMachineType(fullFilePath);
+
             while((singleRow = reader.readNext()) != null){
                 TelemetryItem telItem = TelemetryItem.builder().build();
                 List<TelemetryProperty> propsForSingleItem = new ArrayList<>();
+
+                TelemetryProperty machineTypeProp = TelemetryProperty.builder()
+                        .telPropName(MACHINE_TYPE_PROP)
+                        .telPropValue(machineType)
+                        .telPropType(columnUtil.getColumnType(MACHINE_TYPE_PROP))
+                        .telItem(telItem)
+                        .build();
+                propsForSingleItem.add(machineTypeProp);
+
                 for (int i = 0; i< headers.length; i++){
 
                     String value = singleRow[i];
 
-                    // Seems like NA means not available, according to CSV samples
+                    // Seems like NA means not applicable, according to CSV samples
                     // In such case, skip property save
-                    if (value.equals("NA")){
+                    if (value.equals(NOT_APPLICABLE)){
                         continue;
                     }
 
@@ -129,6 +152,20 @@ public class CsvImporterServiceImp implements CsvImporterService {
         } catch (CsvValidationException e) {
             log.error("File {} is corrupted or not in appropriate CSV format. Skipping.", fullFilePath);
             throw e;
+        }
+    }
+
+    private String getMachineType(String fullFilePath) {
+        String fileName = fullFilePath.substring(fullFilePath.lastIndexOf("\\") + 1);
+        String lowercaseFileName = fileName.toLowerCase(); // Convert to lowercase for case-insensitive comparison
+
+        if (lowercaseFileName.matches(TRACTOR_PATTERN)) {
+            return MACHINE_TYPE_TRACTOR;
+        } else if (lowercaseFileName.matches(COMBINE_PATTERN)) {
+            return MACHONE_TYPE_COMBINE;
+        } else {
+            log.info("Unknown machine type: {}", fullFilePath );
+            return MACHINE_TYPE_UNKNOWN;
         }
     }
 
