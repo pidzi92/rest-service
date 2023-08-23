@@ -186,7 +186,7 @@ public class CsvImporterServiceImp implements CsvImporterService {
         // A bit of transformation, so it is easier for comparison later.
         switch (columnUtil.getColumnType(headers[i])) {
             case DATETIME:
-                //if we convert datetime to int (ms)
+                // We convert datetime to int (ms), for easier operations later
                 try {
                     return String.valueOf(columnUtil.dateFormat.parse(value).toInstant().toEpochMilli());
                 } catch (ParseException e) {
