@@ -21,7 +21,7 @@ import java.util.List;
  * Entity class representing telemetry data items stored in the database.
  */
 @Entity
-@Table(name = "telemetry_item", schema = "telemetry")
+@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,7 +32,7 @@ public class TelemetryItem implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="tel_id") @JsonIgnore Long telId;
+    @Column @JsonIgnore Long telId;
 
     /**
      * List of telemetry properties associated with this telemetry item.

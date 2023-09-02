@@ -21,7 +21,7 @@ import java.io.Serializable;
  * Entity class representing telemetry properties associated with telemetry items in the database.
  */
 @Entity
-@Table(name = "telemetry_property", schema = "telemetry")
+@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,10 +32,10 @@ public class TelemetryProperty implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="tel_prop_id") @JsonIgnore Long telPropId;
-    @Column(name="tel_prop_name") String telPropName;
-    @Column(name="tel_prop_value") String telPropValue;
-    @Column(name="tel_prop_type") @JsonIgnore TelemetryPropertyTypeEnum telPropType;
+    @Column @JsonIgnore Long telPropId;
+    @Column String telPropName;
+    @Column String telPropValue;
+    @Column @JsonIgnore TelemetryPropertyTypeEnum telPropType;
 
     /**
      * Telemetry item associated with this telemetry property.

@@ -5,7 +5,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import com.telemetry.restservice.dao.TelemetryItemDao;
+import com.telemetry.restservice.repository.TelemetryItemRepository;
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.entity.TelemetryProperty;
 import com.telemetry.restservice.service.CsvImporterService;
@@ -42,7 +42,7 @@ public class CsvImporterServiceImp implements CsvImporterService {
     private static final String TRACTOR_PATTERN = "ld_a.*";
     private static final String COMBINE_PATTERN = "ld_c.*";
 
-    private final TelemetryItemDao telemetryItemDao;
+    private final TelemetryItemRepository telemetryItemRepository;
     private final ColumnUtil columnUtil;
 
     @Value("${telemetry.source.csv.root}")
@@ -52,12 +52,12 @@ public class CsvImporterServiceImp implements CsvImporterService {
      * Constructor for the CsvImporterServiceImpl class. This class provides an implementation
      * of the CsvImporterService interface, offering methods for importing CSV data.
      *
-     * @param telemetryItemDao The data access object (DAO) for TelemetryItem, used for database interactions.
+     * @param telemetryItemRepository Repository for TelemetryItem, used for database interactions.
      * @param columnUtil An instance of the ColumnUtil class used for column-related operations.
      */
     @Autowired
-    public CsvImporterServiceImp(TelemetryItemDao telemetryItemDao, ColumnUtil columnUtil) {
-        this.telemetryItemDao = telemetryItemDao;
+    public CsvImporterServiceImp(TelemetryItemRepository telemetryItemRepository, ColumnUtil columnUtil) {
+        this.telemetryItemRepository = telemetryItemRepository;
         this.columnUtil = columnUtil;
     }
 
@@ -154,7 +154,7 @@ public class CsvImporterServiceImp implements CsvImporterService {
                 telItem.setTelProps(propsForSingleItem);
                 telemetryItems.add(telItem);
             }
-            telemetryItemDao.saveAll(telemetryItems);
+            telemetryItemRepository.saveAll(telemetryItems);
         } catch (FileNotFoundException e) {
             log.error("File {} not found. Skipping.", fullFilePath);
             throw e;
