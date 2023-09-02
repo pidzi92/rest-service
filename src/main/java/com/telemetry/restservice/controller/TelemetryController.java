@@ -2,7 +2,7 @@ package com.telemetry.restservice.controller;
 
 import com.telemetry.restservice.entity.TelemetryItem;
 import com.telemetry.restservice.model.Filter;
-import com.telemetry.restservice.impl.TelemetryItemServiceImpl;
+import com.telemetry.restservice.service.TelemetryItemService;
 import com.telemetry.restservice.model.TelemetryItemDTO;
 import com.telemetry.restservice.service.CsvImporterService;
 import io.swagger.annotations.Api;
@@ -23,19 +23,19 @@ import java.util.List;
 @RestController
 public class TelemetryController {
 
-    private CsvImporterService csvImporterService;
-    private final TelemetryItemServiceImpl telemetryItemServiceImpl;
+    private final CsvImporterService csvImporterService;
+    private final TelemetryItemService telemetryItemService;
 
     /**
      * Constructor for TelemetryController.
      *
      * @param csvImporterService              The CSV importer service instance for importing telemetry data.
-     * @param telemetryItemServiceImpl The service implementation for telemetry items.
+     * @param telemetryItemService The service instance for telemetry items.
      */
     @Autowired
-    public TelemetryController(CsvImporterService csvImporterService, TelemetryItemServiceImpl telemetryItemServiceImpl){
+    public TelemetryController(CsvImporterService csvImporterService, TelemetryItemService telemetryItemService){
         this.csvImporterService = csvImporterService;
-        this.telemetryItemServiceImpl = telemetryItemServiceImpl;
+        this.telemetryItemService = telemetryItemService;
     }
 
     /**
@@ -54,6 +54,6 @@ public class TelemetryController {
      */
     @PostMapping("filter")
     public List<TelemetryItemDTO> filter(@RequestBody List<Filter> filters){
-        return telemetryItemServiceImpl.filterTelemetryItems(filters);
+        return telemetryItemService.filterTelemetryItems(filters);
     }
 }
