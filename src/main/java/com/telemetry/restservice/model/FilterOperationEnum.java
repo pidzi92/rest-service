@@ -8,8 +8,8 @@ import java.io.Serializable;
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum FilterOperationEnum implements Serializable {
-    Equals(),
-    LessThan(),
-    GreaterThan(),
-    Contains();
+    Equals,
+    LessThan,
+    GreaterThan,
+    Contains;
 }
